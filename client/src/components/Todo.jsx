@@ -13,7 +13,7 @@ import { IoIosList } from "react-icons/io";
 import EditTaskDialog from './Dialogs/EditTaskDialog';
 import DeleteTaskDialog from './Dialogs/DeleteTaskDialog';
 import NewTaskCreateDialog from './Dialogs/NewTaskDialog';
-import { getSubtaskCount, getTimeAgo } from '../lib/utils';
+import { getSubtaskCount, getTimeAgo, getTimeColor } from '../lib/utils';
 import Dropdown from './Dropdown';
 const Todo = ({ task }) => {
 
@@ -102,10 +102,10 @@ const Todo = ({ task }) => {
 
                 <div className='flex flex-col dark:bg-[#0b0b0b] bg-gray-100 px-2 py-3 rounded-md'>
                     <div className='flex gap-2 items-center'>
-                        {subTasks.length > 0 && (<> <IoIosList className='text-pink-500' />
-                            <span className='text-xs font-light'>{getSubtaskCount(task, getGroupedTasks)}</span></>)}
-                        <CgCalendarDates />
-                        <span className='font-light text-xs'>{getTimeAgo(createdAt)}</span>
+                            {subTasks.length > 0 && (<> <IoIosList size={20} className='text-gray-500' />
+                                <span className='text-sm font-normal'>{getSubtaskCount(task, getGroupedTasks)}</span></>)}
+                            <CgCalendarDates className={`${getTimeColor(createdAt)}`} size={20} />
+                            <span className={`font-light text-xs ${getTimeColor(createdAt)}`}>{getTimeAgo(createdAt)}</span>
                     </div>
                     <div className='flex flex-col gap-2 dark:bg-[#1d1d1d] bg-[#e7e7e7] rounded-md'>
                         {

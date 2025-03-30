@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaUser, FaLock, FaEnvelope, FaClipboardList } from 'react-icons/fa';
 import useStore from '../store';
+import { register } from '../api/auth';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,8 +13,10 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, register } = useStore();
+  const { login } = useStore();
   const navigate = useNavigate();
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
