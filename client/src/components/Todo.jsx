@@ -28,7 +28,7 @@ const Todo = ({ task }) => {
     const [openDropdown, setOpenDropdown] = useState(false)
     const [newTask, setNewTask] = useState('')
     const [isEditing, setIsEditing] = useState(false)
-    const [editTask, setEditTask] = useState('')
+    const [editTask, setEditTask] = useState(title)
     const [isEditTaskDialogOpen, setEditTaskDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [newTaskDialogOpen, setNewTaskDialogOpen] = useState(false);
@@ -48,12 +48,12 @@ const Todo = ({ task }) => {
             setNewTaskDialogOpen(false)
         })
     }
-    const onTaskEdit = (title) => {
-        if (!title.trim()) return;
-        return updateTaskFn.execute(_id, title).then((result) => {
+    const onTaskEdit = (newtitle) => {
+        if (!newtitle.trim()) return;
+        return updateTaskFn.execute(_id, newtitle).then((result) => {
             updateTask(_id, result)
             setEditTask('')
-            setIsEditing(false)
+            // setIsEditing(false)
             setEditTaskDialogOpen(false)
         })
     }

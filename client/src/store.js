@@ -30,7 +30,7 @@ const useStore = create(
             ? { ...collection, tasks: [...(collection.tasks || []), newTask] }
             : collection
         );
-      
+
         set({ collections: updatedCollections });
       },
       deleteCollectionLocal: (id) => {
@@ -56,19 +56,26 @@ const useStore = create(
       toggleFavoriteLocal: (collection) => {
         const collectionId = collection._id;
         const { collections, selectedCollection } = get();
-    
+
         const updatedCollections = collections.map((col) =>
-            col._id === collectionId ? { ...col, isFavorite: !col.isFavorite } : col
+          col._id === collectionId
+            ? { ...col, isFavorite: !col.isFavorite }
+            : col
         );
-    
+
         set({ collections: updatedCollections });
-    
+
         // Update selectedCollection only if it matches the toggled collection
         if (selectedCollection?._id === collectionId) {
-            set({ selectedCollection: { ...selectedCollection, isFavorite: !selectedCollection.isFavorite } });
+          set({
+            selectedCollection: {
+              ...selectedCollection,
+              isFavorite: !selectedCollection.isFavorite,
+            },
+          });
         }
-    },
-    
+      },
+
       updateTask: (id, payload) => {
         const { tasks } = get();
         const updatedTasks = tasks.map((task) => {
@@ -91,90 +98,88 @@ const useStore = create(
         set({ tasks: [...tasks, task] });
         get().setCompletedTasks();
       },
-     
-   
- getTasksByParentId: (showCompleted) => {
-      const { tasks } = get(); // Retrieve tasks from store
-      const group = {};
-      if (!tasks) return group;
-    
-      // Create a task lookup map for quick parent-child resolution
-      const taskMap = new Map();
-      tasks.forEach((task) => taskMap.set(task._id, task));
-    
-      // Helper function to determine if a task is effectively completed
-      const isTaskCompleted = (task) => {
+
+      getTasksByParentId: (showCompleted) => {
+        const { tasks } = get(); // Retrieve tasks from store
+        const group = {};
+        if (!tasks) return group;
+
+        // Create a task lookup map for quick parent-child resolution
+        const taskMap = new Map();
+        tasks.forEach((task) => taskMap.set(task._id, task));
+
+        // Helper function to determine if a task is effectively completed
+        const isTaskCompleted = (task) => {
           if (task.completed) return true;
-          
+
           const parentTask = taskMap.get(task.parent_id);
           return parentTask ? isTaskCompleted(parentTask) : false;
-      };
-    
-      // Group tasks by parent_id
-      tasks.forEach((task) => {
+        };
+
+        // Group tasks by parent_id
+        tasks.forEach((task) => {
           const effectiveCompleted = isTaskCompleted(task);
-    
+
           // Only include tasks if they match the `showCompleted` filter
           if (!task.parent_id) {
-            if (!showCompleted && effectiveCompleted) return; 
-            if(showCompleted && !effectiveCompleted) return; // Skip completed tasks if showCompleted is false
-            
+            if (!showCompleted && effectiveCompleted) return;
+            if (showCompleted && !effectiveCompleted) return; // Skip completed tasks if showCompleted is false
+
             // Skip completed parents if showCompleted is false
-        }
-              const parentId = task.parent_id || null;
-              group[parentId] ||= [];
-              group[parentId].push({ ...task, completed: effectiveCompleted }); // Avoid modifying original task
-          
-      });
-    
-      return group;
-    },
-//   getTasksByParentId: (showCompleted) => {
-//     const { tasks } = get();
-//     const group = {};
-//     if (!tasks) return group;
+          }
+          const parentId = task.parent_id || null;
+          group[parentId] ||= [];
+          group[parentId].push({ ...task, completed: effectiveCompleted }); // Avoid modifying original task
+        });
 
-//     // Create a task lookup map for quick parent-child resolution
-//     const taskMap = new Map();
-//     tasks.forEach((task) => taskMap.set(task._id, task));
+        return group;
+      },
+      //   getTasksByParentId: (showCompleted) => {
+      //     const { tasks } = get();
+      //     const group = {};
+      //     if (!tasks) return group;
 
-//     // Helper function to determine if a task is effectively completed (iterative approach)
-//     const isTaskCompleted = (task) => {
-//         let currentTask = task;
-//         const visited = new Set(); // Track visited nodes to prevent infinite loops
+      //     // Create a task lookup map for quick parent-child resolution
+      //     const taskMap = new Map();
+      //     tasks.forEach((task) => taskMap.set(task._id, task));
 
-//         while (currentTask) {
-//             if (visited.has(currentTask._id)) return false; // Prevent cycles
-//             visited.add(currentTask._id);
+      //     // Helper function to determine if a task is effectively completed (iterative approach)
+      //     const isTaskCompleted = (task) => {
+      //         let currentTask = task;
+      //         const visited = new Set(); // Track visited nodes to prevent infinite loops
 
-//             if (currentTask.completed) return true; // If any task in the hierarchy is completed, return true
+      //         while (currentTask) {
+      //             if (visited.has(currentTask._id)) return false; // Prevent cycles
+      //             visited.add(currentTask._id);
 
-//             currentTask = taskMap.get(currentTask.parent_id); // Move up the hierarchy
-//         }
+      //             if (currentTask.completed) return true; // If any task in the hierarchy is completed, return true
 
-//         return false; // No parent task is completed
-//     };
+      //             currentTask = taskMap.get(currentTask.parent_id); // Move up the hierarchy
+      //         }
 
-//     // Group tasks by parent_id
-//     tasks.forEach((task) => {
-//         const effectiveCompleted = isTaskCompleted(task);
+      //         return false; // No parent task is completed
+      //     };
 
-//         // Skip tasks based on `showCompleted`
-//         if (!showCompleted && effectiveCompleted) return; // Hide completed tasks
-//         if (showCompleted && !effectiveCompleted) return; // Show only completed tasks
+      //     // Group tasks by parent_id
+      //     tasks.forEach((task) => {
+      //         const effectiveCompleted = isTaskCompleted(task);
 
-//         const parentId = task.parent_id || null;
-//         group[parentId] ||= [];
-//         group[parentId].push({ ...task, completed: effectiveCompleted });
-//     });
+      //         // Skip tasks based on `showCompleted`
+      //         if (!showCompleted && effectiveCompleted) return; // Hide completed tasks
+      //         if (showCompleted && !effectiveCompleted) return; // Show only completed tasks
 
-//     return group;
-// },
+      //         const parentId = task.parent_id || null;
+      //         group[parentId] ||= [];
+      //         group[parentId].push({ ...task, completed: effectiveCompleted });
+      //     });
 
-    getGroupedTasks: (parentId, showCompleted) => {
+      //     return group;
+      // },
+
+      getGroupedTasks: (parentId, showCompleted) => {
         const tasksByParentId = get().getTasksByParentId(showCompleted);
         return tasksByParentId[parentId] || [];
-    },
+      },
 
       rootTask: () => {
         const TasksByParentId = get().getTasksByParentId();
@@ -227,7 +232,7 @@ const useStore = create(
           return false;
         }
       },
-      
+
       // Add a new collection
       addCollection: async () => {
         const { collections, token } = get();

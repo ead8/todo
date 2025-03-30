@@ -12,7 +12,7 @@ const EditTaskDialog = ({ isEditTaskDialogOpen, setEditTaskDialogOpen, isEditing
                <Input value={editTask} onChange={(e) => setEditTask(e.target.value)} placeholder="Task name" />
                <div className="flex justify-end space-x-2">
                    <RejectButton onClick={() => setEditTaskDialogOpen(false)} text="Cancel" />
-                   <AcceptButton onClick={onTaskEdit} text="Save" />
+                <AcceptButton onClick={() => onTaskEdit(editTask)} text="Save" />
                </div>
         </DialogWrapper>
     )}
